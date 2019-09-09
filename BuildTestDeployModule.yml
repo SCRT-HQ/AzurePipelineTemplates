@@ -114,7 +114,7 @@ stages:
       condition: succeededOrFailed()
 
   - job: Job6
-    displayName: Test Docker
+    displayName: Test Docker (pwsh-preview)
     condition: succeeded()
     pool:
       name: Hosted Ubuntu 1604
