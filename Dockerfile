@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/powershell:ubuntu-18.04 as base
+FROM mcr.microsoft.com/powershell:preview-ubuntu-18.04 as base
 RUN apt-get update && apt-get install -y git
 
 FROM base as src
