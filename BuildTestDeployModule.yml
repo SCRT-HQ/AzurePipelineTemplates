@@ -7,7 +7,7 @@
 
     steps:
     - checkout: self
-      submodules: true
+      submodules: recursive
 
     - powershell: . ./build.ps1
       displayName: Compile Module
