@@ -15,8 +15,11 @@ trigger:
     include:
       - Preview.Dockerfile
       - Latest.Dockerfile
+      - TestPreview.Dockerfile
+      - TestLatest.Dockerfile
       - BuildDockerImages.yml
       - dockerImageBootstrap.ps1
+      - build.ps1
 
 schedules:
 - cron: "0 0 * * *"
@@ -44,7 +47,21 @@ stages:
           displayName: Build Docker Image
           inputs:
             containerRegistry: DockerHub
-            command: buildAndPush
+            command: build
+            repository: scrthq/powershell
+            Dockerfile: Preview.Dockerfile
+            tags: preview
+        - pwsh: docker build . -t test -f ./Test.Dockerfile
+          displayName: Build container from image
+        - pwsh: docker run --name test test
+          displayName: Test Container
+        - pwsh: docker container prune -f
+          displayName: Clean up container
+        - task: Docker@2
+          displayName: Push to DockerHub
+          inputs:
+            containerRegistry: DockerHub
+            command: push
             repository: scrthq/powershell
             Dockerfile: Preview.Dockerfile
             tags: preview
@@ -52,7 +69,6 @@ stages:
           displayName: Logout of DockerHub
           inputs:
             command: logout
-            containerRegistry: DockerHub
 
     - job: latest
       displayName: Build Latest Image
@@ -60,7 +76,7 @@ stages:
         name: Hosted Ubuntu 1604
       steps:
         - task: Docker@2
-          displayName: Login to Docker Hub
+          displayName: Login to DockerHub
           inputs:
             containerRegistry: DockerHub
             command: login
@@ -68,7 +84,21 @@ stages:
           displayName: Build Docker Image
           inputs:
             containerRegistry: DockerHub
-            command: buildAndPush
+            command: build
+            repository: scrthq/powershell
+            Dockerfile: Latest.Dockerfile
+            tags: latest
+        - pwsh: docker build . -t test -f ./Test.Dockerfile
+          displayName: Build container from image
+        - pwsh: docker run --name test test
+          displayName: Test Container
+        - pwsh: docker container prune -f
+          displayName: Clean up container
+        - task: Docker@2
+          displayName: Push to DockerHub
+          inputs:
+            containerRegistry: DockerHub
+            command: push
             repository: scrthq/powershell
             Dockerfile: Latest.Dockerfile
             tags: latest
@@ -76,4 +106,3 @@ stages:
           displayName: Logout of DockerHub
           inputs:
             command: logout
-            containerRegistry: DockerHub
