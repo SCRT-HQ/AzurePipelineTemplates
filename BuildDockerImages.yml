@@ -13,8 +13,8 @@ trigger:
     - refs/heads/master
 
 stages:
-- stage: preview
-  displayName: Build Preview Image
+- stage: docker
+  displayName: Build Docker Images
   jobs:
     - job: preview
       displayName: Build Preview Image
@@ -31,8 +31,9 @@ stages:
           inputs:
             containerRegistry: DockerHub
             command: build
-            repository: powershell
+            repository: scrthq/powershell
             Dockerfile: Preview.Dockerfile
+            tags: preview
     - job: latest
       displayName: Build Latest Image
       pool:
@@ -48,5 +49,6 @@ stages:
           inputs:
             containerRegistry: DockerHub
             command: build
-            repository: powershell
+            repository: scrthq/powershell
             Dockerfile: Latest.Dockerfile
+            tags: latest

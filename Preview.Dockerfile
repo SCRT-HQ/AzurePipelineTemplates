@@ -7,10 +7,10 @@ RUN apt-get update && apt-get install -y \
     wget \
     mono-complete \
     libcurl3 \
+    unzip \
+    zip \
     --no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y unzip zip
 
 FROM base as src
 
