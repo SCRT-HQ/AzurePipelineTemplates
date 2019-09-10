@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 resources:
 - repo: self
   clean: true
@@ -13,9 +8,7 @@ trigger:
       - refs/heads/master
   paths:
     include:
-      - Preview.Dockerfile
-      - Latest.Dockerfile
-      - Test.Dockerfile
+      - '*.Dockerfile'
       - BuildDockerImages.yml
       - DockerPipelineTemplate.yml
       - dockerImageBootstrap.ps1
