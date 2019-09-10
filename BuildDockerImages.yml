@@ -50,7 +50,7 @@ stages:
             repository: scrthq/powershell
             Dockerfile: Preview.Dockerfile
             tags: preview
-        - pwsh: docker build . -t test -f ./Test.Dockerfile
+        - pwsh: docker build . -t test -f TestPreview.Dockerfile
           displayName: Build container from image
         - pwsh: docker run --name test test
           displayName: Test Container
@@ -87,7 +87,7 @@ stages:
             repository: scrthq/powershell
             Dockerfile: Latest.Dockerfile
             tags: latest
-        - pwsh: docker build . -t test -f ./Test.Dockerfile
+        - pwsh: docker build . -t test -f TestLatest.Dockerfile
           displayName: Build container from image
         - pwsh: docker run --name test test
           displayName: Test Container

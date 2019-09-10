@@ -1,4 +1,4 @@
-FROM scrthq/powershell
+FROM scrthq/powershell:preview
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 COPY [".", "/source/"]
 WORKDIR /source
