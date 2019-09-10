@@ -37,71 +37,23 @@ stages:
       pool:
         name: Hosted Ubuntu 1604
       steps:
-        - task: Docker@2
-          displayName: Login to DockerHub
-          inputs:
-            containerRegistry: DockerHub
-            command: login
-        - task: Docker@2
-          displayName: Build Docker Image
-          inputs:
-            containerRegistry: DockerHub
-            command: build
-            repository: scrthq/powershell
-            Dockerfile: Preview.Dockerfile
-            tags: preview
-        - pwsh: docker build . -t test -f TestPreview.Dockerfile
-          displayName: Build container from image
-        - pwsh: docker run --name test test
-          displayName: Test Container
-        - pwsh: docker container prune -f
-          displayName: Clean up container
-        - task: Docker@2
-          displayName: Push to DockerHub
-          inputs:
-            containerRegistry: DockerHub
-            command: push
-            repository: scrthq/powershell
-            Dockerfile: Preview.Dockerfile
-            tags: preview
-        - task: Docker@2
-          displayName: Logout of DockerHub
-          inputs:
-            command: logout
+        - template: DockerPipelineTemplate.yml
+          parameters:
+              containerRegistry: DockerHub
+              repository: scrthq/powershell
+              dockerFile: Preview.Dockerfile
+              testFile: TestPreview.Dockerfile
+              tag: preview
 
     - job: latest
       displayName: Build Latest Image
       pool:
         name: Hosted Ubuntu 1604
       steps:
-        - task: Docker@2
-          displayName: Login to DockerHub
-          inputs:
-            containerRegistry: DockerHub
-            command: login
-        - task: Docker@2
-          displayName: Build Docker Image
-          inputs:
-            containerRegistry: DockerHub
-            command: build
-            repository: scrthq/powershell
-            Dockerfile: Latest.Dockerfile
-            tags: latest
-        - pwsh: docker build . -t test -f TestLatest.Dockerfile
-          displayName: Build container from image
-        - pwsh: docker run --name test test
-          displayName: Test Container
-        - pwsh: docker container prune -f
-          displayName: Clean up container
-        - task: Docker@2
-          displayName: Push to DockerHub
-          inputs:
-            containerRegistry: DockerHub
-            command: push
-            repository: scrthq/powershell
-            Dockerfile: Latest.Dockerfile
-            tags: latest
-        - task: Docker@2
-          displayName: Logout of DockerHub
-          inputs:
-            command: logout
+        - template: DockerPipelineTemplate.yml
+          parameters:
+              containerRegistry: DockerHub
+              repository: scrthq/powershell
+              dockerFile: Latest.Dockerfile
+              testFile: TestLatest.Dockerfile
+              tag: latest
