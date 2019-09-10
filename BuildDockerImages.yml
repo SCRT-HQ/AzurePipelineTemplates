@@ -19,8 +19,9 @@ trigger:
       - dockerImageBootstrap.ps1
 
 schedules:
-- cron: "0 0 * * *"
+- cron: "0 0 0 1/1 * ? *"
   displayName: Daily midnight build
+  always: true
   branches:
     include:
       - refs/heads/master
