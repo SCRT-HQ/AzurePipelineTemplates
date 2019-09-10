@@ -17,6 +17,7 @@ trigger:
       - Latest.Dockerfile
       - Test.Dockerfile
       - BuildDockerImages.yml
+      - DockerPipelineTemplate.yml
       - dockerImageBootstrap.ps1
       - build.ps1
 
