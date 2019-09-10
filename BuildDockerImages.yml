@@ -15,8 +15,7 @@ trigger:
     include:
       - Preview.Dockerfile
       - Latest.Dockerfile
-      - TestPreview.Dockerfile
-      - TestLatest.Dockerfile
+      - Test.Dockerfile
       - BuildDockerImages.yml
       - dockerImageBootstrap.ps1
       - build.ps1
