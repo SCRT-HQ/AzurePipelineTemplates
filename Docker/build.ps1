@@ -6,7 +6,7 @@ try {
     [PSCustomObject]$PSVersionTable
     Write-Host "GitVersion version:`n"
     'GitVersion ' + (gitversion /version)
-    Write-Host "`n`nValidating Modules installed:"
+    Write-Host "`n`nValidating Modules installed:`n"
     @{
         Configuration     = '1.3.1'
         PackageManagement = '1.3.1'
@@ -19,7 +19,10 @@ try {
         $module = $_.Key
         $version = $_.Value
         Write-Host "Checking if module $($module)@$($version)+ is installed"
-        if ($null -eq (Get-Module $_.Key -ListAvailable | Where-Object {$_.Version -ge [version]$version})) {
+        if (($found = Get-Module $_.Key -ListAvailable | Where-Object {$_.Version -ge [version]$version})) {
+            $found
+        }
+        else {
             throw "$($module)@$($version)+ was not found on this container!"
             exit 1
         }

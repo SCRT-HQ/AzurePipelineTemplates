@@ -8,11 +8,8 @@ trigger:
       - refs/heads/master
   paths:
     include:
-      - '*.Dockerfile'
+      - Docker/*
       - BuildDockerImages.yml
-      - DockerPipelineTemplate.yml
-      - dockerImageBootstrap.ps1
-      - build.ps1
 
 schedules:
 - cron: "0 0 * * *"
@@ -31,12 +28,12 @@ stages:
       pool:
         name: Hosted Ubuntu 1604
       steps:
-        - template: DockerPipelineTemplate.yml
+        - template: Docker/DockerPipelineTemplate.yml
           parameters:
               containerRegistry: DockerHub
               repository: scrthq/powershell
-              dockerFile: Preview.Dockerfile
-              testFile: TestPreview.Dockerfile
+              dockerFile: Docker/Preview.Dockerfile
+              testFile: Docker/TestPreview.Dockerfile
               tag: preview
 
     - job: latest
@@ -44,10 +41,10 @@ stages:
       pool:
         name: Hosted Ubuntu 1604
       steps:
-        - template: DockerPipelineTemplate.yml
+        - template: Docker/DockerPipelineTemplate.yml
           parameters:
               containerRegistry: DockerHub
               repository: scrthq/powershell
-              dockerFile: Latest.Dockerfile
-              testFile: TestLatest.Dockerfile
+              dockerFile: Docker/Latest.Dockerfile
+              testFile: Docker/TestLatest.Dockerfile
               tag: latest

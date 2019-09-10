@@ -129,16 +129,16 @@ stages:
     - pwsh: if (-not (Test-Path Dockerfile)) {Write-Host "Pulling Dockerfile from template repo";Invoke-RestMethod 'https://raw.githubusercontent.com/SCRT-HQ/AzurePipelineTemplates/master/Dockerfile' | Set-Content Dockerfile -Force}
       displayName: Create Dockerfile
 
-    - pwsh: docker build . -t test -f Dockerfile
+    - script: docker build . -t test -f Dockerfile
       displayName: Build container image
 
-    - pwsh: docker run --name test test
+    - script: docker run --name test test
       displayName: Test Module in Container
 
-    - pwsh: docker cp test:/source/BuildOutput/TestResults.xml BuildOutput/TestResults.xml
+    - script: docker cp test:/source/BuildOutput/TestResults.xml BuildOutput/TestResults.xml
       displayName: Copy container test results
 
-    - pwsh: docker container prune -f
+    - script: docker container prune -f
       displayName: Clean up container
 
     - task: PublishTestResults@2

@@ -19,13 +19,13 @@ steps:
     repository: ${{ parameters.repository }}
     Dockerfile: ${{ parameters.dockerFile }}
     tags: ${{ parameters.tag }}
-- pwsh: docker build . -t test -f ${{ parameters.testFile }}
+- script: docker build . -t test -f ${{ parameters.testFile }}
   displayName: Build container from image
   condition: and(succeeded(), ne('${{ parameters.testFile }}', ''))
-- pwsh: docker run --name test test
+- script: docker run --name test test
   displayName: Test Container
   condition: and(succeeded(), ne('${{ parameters.testFile }}', ''))
-- pwsh: docker container prune -f
+- script: docker container prune -f
   displayName: Clean up container
   condition: and(succeeded(), ne('${{ parameters.testFile }}', ''))
 - task: Docker@2
