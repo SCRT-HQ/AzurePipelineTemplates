@@ -12,8 +12,8 @@ try {
         $module = $_.Key
         $version = $_.Value
         Write-Host "Checking if module $($module)@$($version)+ is installed"
-        if (($found = Get-Module $_.Key -ListAvailable | Where-Object {$_.Version -ge [version]$version})) {
-            $found
+        if (($found = Get-Module $module -ListAvailable | Where-Object {$_.Version -ge [version]$version})) {
+            Write-Host "$module found:";$found | Format-Table Name,Version | Out-Host
         }
         else {
             throw "$($module)@$($version)+ was not found on this container!"
