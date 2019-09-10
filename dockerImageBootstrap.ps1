@@ -21,6 +21,7 @@ $Dependencies = @{
     InvokeBuild       = '5.5.2'
     psake             = '4.8.0'
     Pester            = '4.9.0'
+    PSScriptAnalyzer  = '1.18.2'
 }
 $moduleDependencies = @()
 foreach ($module in $Dependencies.Keys) {
