@@ -1,5 +1,8 @@
+Write-Host -ForegroundColor Cyan "Setting PSGallery to Trusted"
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -Verbose:$false
-$null = Get-PackageProvider -Name Nuget -ForceBootstrap -Verbose:$false
+
+Write-Host -ForegroundColor Cyan "Bootstrapping NuGet"
+$null = Get-PackageProvider -Name NuGet -ForceBootstrap -Verbose:$false
 $PSDefaultParameterValues = @{
     '*-Module:Verbose'                  = $false
     '*-Module:Force'                    = $true
@@ -28,16 +31,15 @@ foreach ($module in $Dependencies.Keys) {
     }
 }
 foreach ($item in $moduleDependencies) {
-    Write-BuildLog "[$($item['Name'])] Resolving"
     try {
         if ($imported = Get-Module $item['Name']) {
-            Write-BuildLog "[$($item['Name'])] Removing imported module"
+            Write-Host -ForegroundColor Cyan "[$($item['Name'])] Removing imported module"
             $imported | Remove-Module
         }
         Import-Module @item
     }
     catch {
-        Write-BuildLog "[$($item['Name'])] Installing missing module"
+        Write-Host -ForegroundColor Cyan "[$($item['Name'])] Installing missing module"
         Install-Module @item
         Import-Module @item
     }
