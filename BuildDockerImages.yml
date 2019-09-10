@@ -10,7 +10,13 @@ resources:
 trigger:
   branches:
     include:
-    - refs/heads/master
+      - refs/heads/master
+  paths:
+    include:
+      - Preview.Dockerfile
+      - Latest.Dockerfile
+      - BuildDockerImages.yml
+      - dockerImageBootstrap.ps1
 
 stages:
 - stage: docker
@@ -30,7 +36,7 @@ stages:
           displayName: Build Docker Image
           inputs:
             containerRegistry: DockerHub
-            command: build
+            command: buildAndPush
             repository: scrthq/powershell
             Dockerfile: Preview.Dockerfile
             tags: preview
@@ -54,7 +60,7 @@ stages:
           displayName: Build Docker Image
           inputs:
             containerRegistry: DockerHub
-            command: build
+            command: buildAndPush
             repository: scrthq/powershell
             Dockerfile: Latest.Dockerfile
             tags: latest
