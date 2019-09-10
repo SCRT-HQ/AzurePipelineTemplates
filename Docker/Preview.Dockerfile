@@ -29,7 +29,9 @@ LABEL vendor="scrthq"
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 COPY ["dockerImageBootstrap.ps1", "/data/dockerImageBootstrap.ps1"]
+COPY ["moduleDependencies.ps1", "/data/moduleDependencies.ps1"]
 RUN . /data/dockerImageBootstrap.ps1
+RUN rm -rf /data/*
 
 WORKDIR /source
 

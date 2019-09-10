@@ -7,15 +7,8 @@ try {
     Write-Host "GitVersion version:`n"
     'GitVersion ' + (gitversion /version)
     Write-Host "`n`nValidating Modules installed:`n"
-    @{
-        Configuration     = '1.3.1'
-        PackageManagement = '1.3.1'
-        PowerShellGet     = '2.1.2'
-        InvokeBuild       = '5.5.2'
-        psake             = '4.8.0'
-        Pester            = '4.9.0'
-        PSScriptAnalyzer  = '1.18.2'
-    }.GetEnumerator() | ForEach-Object {
+    $Dependencies = . (Join-Path $PSScriptRoot 'moduleDependencies.ps1')
+    $Dependencies.GetEnumerator() | ForEach-Object {
         $module = $_.Key
         $version = $_.Value
         Write-Host "Checking if module $($module)@$($version)+ is installed"
