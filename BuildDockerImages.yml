@@ -34,6 +34,12 @@ stages:
             repository: scrthq/powershell
             Dockerfile: Preview.Dockerfile
             tags: preview
+        - task: Docker@2
+          displayName: Logout of DockerHub
+          inputs:
+            command: logout
+            containerRegistry: DockerHub
+
     - job: latest
       displayName: Build Latest Image
       pool:
@@ -52,3 +58,8 @@ stages:
             repository: scrthq/powershell
             Dockerfile: Latest.Dockerfile
             tags: latest
+        - task: Docker@2
+          displayName: Logout of DockerHub
+          inputs:
+            command: logout
+            containerRegistry: DockerHub
