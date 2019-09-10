@@ -18,6 +18,13 @@ trigger:
       - BuildDockerImages.yml
       - dockerImageBootstrap.ps1
 
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+      - refs/heads/master
+
 stages:
 - stage: docker
   displayName: Build Docker Images

@@ -1,11 +1,5 @@
-FROM mcr.microsoft.com/powershell:preview-ubuntu-18.04 as base
-RUN apt-get update && apt-get install -y git
-
-FROM base as src
-LABEL maintainer="nferrell"
-LABEL description="Ubuntu 18.04 for PowerShell module testing in CI"
-LABEL vendor="scrthq"
-SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $VerbosePreference = 'Continue'; $ProgressPreference = 'SilentlyContinue';"]
+FROM scrthq/powershell:preview
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 COPY [".", "/source/"]
 WORKDIR /source
 ENTRYPOINT [ "pwsh", "-command", ". ./build.ps1 -Task Test" ]
