@@ -6,6 +6,6 @@ LABEL maintainer="nferrell"
 LABEL description="Ubuntu 18.04 for PowerShell module testing in CI"
 LABEL vendor="scrthq"
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $VerbosePreference = 'Continue'; $ProgressPreference = 'SilentlyContinue';"]
-COPY [".", "/Source/"]
-WORKDIR /Source
+COPY [".", "/source/"]
+WORKDIR /source
 ENTRYPOINT [ "pwsh", "-command", ". ./build.ps1 -Task Test" ]

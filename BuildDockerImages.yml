@@ -1,0 +1,52 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+resources:
+- repo: self
+  clean: true
+
+trigger:
+  branches:
+    include:
+    - refs/heads/master
+
+stages:
+- stage: preview
+  displayName: Build Preview Image
+  jobs:
+    - job: preview
+      displayName: Build Preview Image
+      pool:
+        name: Hosted Ubuntu 1604
+      steps:
+        - task: Docker@2
+          displayName: Login to DockerHub
+          inputs:
+            containerRegistry: DockerHub
+            command: login
+        - task: Docker@2
+          displayName: Build Docker Image
+          inputs:
+            containerRegistry: DockerHub
+            command: build
+            repository: powershell
+            Dockerfile: Preview.Dockerfile
+    - job: latest
+      displayName: Build Latest Image
+      pool:
+        name: Hosted Ubuntu 1604
+      steps:
+        - task: Docker@2
+          displayName: Login to Docker Hub
+          inputs:
+            containerRegistry: DockerHub
+            command: login
+        - task: Docker@2
+          displayName: Build Docker Image
+          inputs:
+            containerRegistry: DockerHub
+            command: build
+            repository: powershell
+            Dockerfile: Latest.Dockerfile

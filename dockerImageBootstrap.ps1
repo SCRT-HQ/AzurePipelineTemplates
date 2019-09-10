@@ -12,7 +12,6 @@ $PSDefaultParameterValues = @{
     'Install-Module:Confirm'            = $false
     'Install-Module:ErrorAction'        = 'Stop'
     'Install-Module:Repository'         = 'PSGallery'
-    'Install-Module:Scope'              = 'CurrentUser'
     'Install-Module:SkipPublisherCheck' = $true
 }
 $Dependencies = @{
@@ -28,19 +27,26 @@ foreach ($module in $Dependencies.Keys) {
     $moduleDependencies += @{
         Name           = $module
         MinimumVersion = $Dependencies[$module]
+        Force          = $true
     }
 }
 foreach ($item in $moduleDependencies) {
-    try {
-        if ($imported = Get-Module $item['Name']) {
-            Write-Host -ForegroundColor Cyan "[$($item['Name'])] Removing imported module"
-            $imported | Remove-Module
-        }
-        Import-Module @item
+    if (Get-Module "$($item['Name'])*" -ListAvailable | Where-Object {
+        $_.Name -eq $item['Name'] -and
+        $_.Version -ge [Version]$item['MinimumVersion']
+    }) {
+        Write-Host -ForegroundColor Cyan "[$($item['Name'])] Module already installed -- skipping"
     }
-    catch {
-        Write-Host -ForegroundColor Cyan "[$($item['Name'])] Installing missing module"
+    else {
         Install-Module @item
-        Import-Module @item
     }
 }
+
+if (-not (Test-Path $profile.AllUsersAllHosts)) {
+    New-Item $profile.AllUsersAllHosts
+}
+@'
+function global:gitversion {
+    mono /GitVersion/GitVersion.exe $args
+}
+'@ | Set-Content $profile.AllUsersAllHosts

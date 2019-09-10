@@ -125,7 +125,7 @@ stages:
       inputs:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
-    
+
     - pwsh: if (-not (Test-Path Dockerfile)) {Write-Host "Pulling Dockerfile from template repo";Invoke-RestMethod 'https://raw.githubusercontent.com/SCRT-HQ/AzurePipelineTemplates/master/Dockerfile' | Set-Content Dockerfile -Force}
       displayName: Create Dockerfile
 
@@ -135,7 +135,7 @@ stages:
     - pwsh: docker run --name module module-img:latest
       displayName: Test Module in Container
 
-    - pwsh: docker cp module:/Source/BuildOutput/TestResults.xml BuildOutput/TestResults_Docker.xml
+    - pwsh: docker cp module:/source/BuildOutput/TestResults.xml BuildOutput/TestResults_Docker.xml
       displayName: Copy container test results
 
     - pwsh: docker rm module
