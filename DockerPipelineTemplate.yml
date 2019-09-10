@@ -21,13 +21,13 @@ steps:
     tags: ${{ parameters.tag }}
 - pwsh: docker build . -t test -f ${{ parameters.testFile }}
   displayName: Build container from image
-  condition: and(succeeded(), ne(parameters.testFile, ''))
+  condition: and(succeeded(), ne('${{ parameters.testFile }}', ''))
 - pwsh: docker run --name test test
   displayName: Test Container
-  condition: and(succeeded(), ne(parameters.testFile, ''))
+  condition: and(succeeded(), ne('${{ parameters.testFile }}', ''))
 - pwsh: docker container prune -f
   displayName: Clean up container
-  condition: and(succeeded(), ne(parameters.testFile, ''))
+  condition: and(succeeded(), ne('${{ parameters.testFile }}', ''))
 - task: Docker@2
   displayName: Push to ${{ parameters.containerRegistry }}
   inputs:
