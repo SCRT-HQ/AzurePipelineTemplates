@@ -1,5 +1,5 @@
 # Pull down the latest preview version of the image
-FROM scrthq/powershell:preview
+FROM scrthq/powershell:preview-buildtest-ubu-1804
 # Set the default shell for the container
 SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 # Copy current repo contents into the container's /source directory
