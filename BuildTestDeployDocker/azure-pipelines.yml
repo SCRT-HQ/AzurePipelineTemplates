@@ -1,0 +1,42 @@
+parameters:
+  containerRegistry: ''
+  repository: ''
+  dockerFile: ''
+  testFile: ''
+  tag: ''
+
+steps:
+- task: Docker@2
+  displayName: Login to ${{ parameters.containerRegistry }}
+  inputs:
+    containerRegistry: ${{ parameters.containerRegistry }}
+    command: login
+- task: Docker@2
+  displayName: Build Docker Image
+  inputs:
+    containerRegistry: ${{ parameters.containerRegistry }}
+    command: build
+    repository: ${{ parameters.repository }}
+    Dockerfile: ${{ parameters.dockerFile }}
+    tags: ${{ parameters.tag }}
+- script: docker build . -t test -f ${{ parameters.testFile }}
+  displayName: Build container from image
+  condition: and(succeeded(), ne('${{ parameters.testFile }}', ''))
+- script: docker run --name test test
+  displayName: Test Container
+  condition: and(succeeded(), ne('${{ parameters.testFile }}', ''))
+- script: docker container prune -f
+  displayName: Clean up container
+  condition: and(succeeded(), ne('${{ parameters.testFile }}', ''))
+- task: Docker@2
+  displayName: Push to ${{ parameters.containerRegistry }}
+  inputs:
+    containerRegistry: ${{ parameters.containerRegistry }}
+    command: push
+    repository: ${{ parameters.repository }}
+    Dockerfile: ${{ parameters.dockerFile }}
+    tags: ${{ parameters.tag }}
+- task: Docker@2
+  displayName: Logout of ${{ parameters.containerRegistry }}
+  inputs:
+    command: logout
