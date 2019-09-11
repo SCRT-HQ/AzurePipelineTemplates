@@ -33,7 +33,7 @@ stages:
               containerRegistry: DockerHub
               repository: scrthq/powershell
               dockerFile: Docker/Preview.Dockerfile
-              #testFile: Docker/TestPreview.Dockerfile
+              testFile: Docker/TestPreview.Dockerfile
               tag: preview
 
     - job: latest
