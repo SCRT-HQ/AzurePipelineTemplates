@@ -126,7 +126,15 @@ stages:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
 
-    - pwsh: if (-not (Test-Path Dockerfile)) {Write-Host "Pulling Dockerfile from template repo";Invoke-RestMethod 'https://raw.githubusercontent.com/SCRT-HQ/AzurePipelineTemplates/master/Dockerfile' | Set-Content Dockerfile -Force}
+    - pwsh: |
+        if (-not (Test-Path Dockerfile)) {
+            Write-Host "Pulling Dockerfile from template repo"
+            Invoke-RestMethod 'https://raw.githubusercontent.com/SCRT-HQ/AzurePipelineTemplates/master/BuildTestDeployModule/Dockerfile' | Set-Content Dockerfile -Force
+        }
+        else {
+            Write-Host "Dockerfile already exists in current repo! Contents:`n"
+            Get-Content Dockerfile
+        }
       displayName: Create Dockerfile
 
     - script: docker build . -t test -f Dockerfile
