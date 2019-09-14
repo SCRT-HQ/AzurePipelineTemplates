@@ -233,20 +233,6 @@ stages:
         secureFile: deploy_key
       displayName: 'Download Deploy Key'
 
-    - task: UsePythonVersion@0
-      inputs:
-        addToPath: true
-        versionSpec: '2.x'
-
-    #- script: pip install --upgrade pip
-    #  displayName: Upgrade pip
-
-    - script: |
-        pip install --user mkdocs
-        pip install --user mkdocs-material
-        pip install --user mkdocs-minify-plugin
-      displayName: Install Pip Requirements
-
     - script: |
         git config --local user.name "Azure Pipelines"
         git config --local user.email "azuredevops@microsoft.com"
@@ -256,10 +242,7 @@ stages:
         git remote set-url origin ${{ parameters.GitUrl }}
       displayName: Configure Git
 
-    - powershell: . ./build.ps1 -Task MkDocs
-      displayName: Build Docs
+    - powershell: . ./build.ps1 -Task Docs
+      displayName: Build and Deploy Docs
       env:
         GitHubPAT: $(GitHub.PAT)
-
-    - script: python -m mkdocs gh-deploy --message "[skip ci] Deploying MkDocs to GitHub @ ${{ parameters.GitUrl }}" --verbose --force --ignore-version
-      displayName: Deploy MkDocs to GitHub Pages
