@@ -220,6 +220,10 @@ stages:
         chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
         git remote set-url origin ${{ parameters.GitUrl }}
+        pip install --user wheel
+        pip install --user mkdocs
+        pip install --user mkdocs-material
+        pip install --user mkdocs-minify-plugin
 
     - powershell: . ./build.ps1 -Task MkDocs
       displayName: Deploy Docs to GitHub Pages
