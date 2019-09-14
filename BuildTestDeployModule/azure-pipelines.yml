@@ -222,7 +222,19 @@ stages:
         secureFile: deploy_key
       displayName: 'Download Deploy Key'
 
-    - script: python -m pip install --upgrade pip
+    - task: UsePythonVersion@0
+      inputs:
+        addToPath: true
+        versionSpec: '2.x'
+
+    - script: pip install --upgrade pip
+      displayName: Upgrade pip
+
+    - script: |
+        pip install --user mkdocs
+        pip install --user mkdocs-material
+        pip install --user mkdocs-minify-plugin
+      displayName: Install Requirements
 
     - script: |
         git config --local user.name "Azure Pipelines"
@@ -231,9 +243,7 @@ stages:
         chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
         git remote set-url origin ${{ parameters.GitUrl }}
-        pip install --user mkdocs
-        pip install --user mkdocs-material
-        pip install --user mkdocs-minify-plugin
+      displayName: Configure Git
 
     - powershell: . ./build.ps1 -Task MkDocs
       displayName: Deploy Docs to GitHub Pages
