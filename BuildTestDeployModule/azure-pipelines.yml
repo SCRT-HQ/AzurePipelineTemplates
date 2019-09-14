@@ -208,11 +208,9 @@ stages:
     - checkout: self
       submodules: recursive
       persistCredentials: true
-      condition: and(succeeded(), ne('${{ parameters.MkDocs }}', ''), ne('${{ parameters.GitUrl }}', ''))
 
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
-      condition: and(succeeded(), ne('${{ parameters.MkDocs }}', ''), ne('${{ parameters.GitUrl }}', ''))
       inputs:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
@@ -247,6 +245,5 @@ stages:
 
     - powershell: . ./build.ps1 -Task MkDocs
       displayName: Deploy Docs to GitHub Pages
-      condition: and(succeeded(), ne('${{ parameters.MkDocs }}', ''), ne('${{ parameters.GitUrl }}', ''))
       env:
         GitHubPAT: $(GitHub.PAT)
