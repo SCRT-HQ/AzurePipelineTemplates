@@ -40,6 +40,8 @@ stages:
 
     - powershell: . ./build.ps1 -Task Test
       displayName: Test Module
+      env:
+        PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
 
     - task: PublishTestResults@2
       displayName: 'Publish Test Results **/Test*.xml'
@@ -63,6 +65,8 @@ stages:
 
     - pwsh: . ./build.ps1 -Task Test
       displayName: Test Module
+      env:
+        PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
 
     - task: PublishTestResults@2
       displayName: 'Publish Test Results **/Test*.xml'
@@ -86,6 +90,8 @@ stages:
 
     - pwsh: . ./build.ps1 -Task Test
       displayName: Test Module
+      env:
+        PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
 
     - task: PublishTestResults@2
       displayName: 'Publish Test Results **/Test*.xml'
@@ -109,6 +115,8 @@ stages:
 
     - pwsh: . ./build.ps1 -Task Test
       displayName: Test Module
+      env:
+        PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
 
     - task: PublishTestResults@2
       displayName: 'Publish Test Results **/Test*.xml'
@@ -180,6 +188,7 @@ stages:
       displayName: Deploy to PowerShell Gallery
       condition: startsWith(variables['Build.SourceVersionMessage'], '!deploy')
       env:
+        PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
         GitHubPAT: $(GitHub.PAT)
         NuGetApiKey: $(NuGetApiKey)
         TwitterAccessSecret: $(Twitter.AccessSecret)
