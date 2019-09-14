@@ -222,6 +222,8 @@ stages:
         secureFile: deploy_key
       displayName: 'Download Deploy Key'
 
+    - script: python -m pip install --upgrade pip
+
     - script: |
         git config --local user.name "Azure Pipelines"
         git config --local user.email "azuredevops@microsoft.com"
@@ -229,8 +231,6 @@ stages:
         chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
         git remote set-url origin ${{ parameters.GitUrl }}
-        pip install --upgrade pip
-        pip install --user wheel
         pip install --user mkdocs
         pip install --user mkdocs-material
         pip install --user mkdocs-minify-plugin
