@@ -261,5 +261,5 @@ stages:
       env:
         GitHubPAT: $(GitHub.PAT)
 
-    - script: mkdocs gh-deploy --message "[skip ci] Deploying MkDocs update to ${{ parameters.GitUrl }}" --verbose --force --ignore-version
+    - script: python -m mkdocs gh-deploy --message "[skip ci] Deploying MkDocs update to ${{ parameters.GitUrl }}" --verbose --force --ignore-version
       displayName: Deploy Docs to GitHub Pages
