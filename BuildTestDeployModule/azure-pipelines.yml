@@ -37,18 +37,20 @@ stages:
       inputs:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
 
     - powershell: . ./build.ps1 -Task Test
       displayName: Test Module
       env:
         PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
 
     - task: PublishTestResults@2
       displayName: 'Publish Test Results **/Test*.xml'
       inputs:
         testRunner: NUnit
         testResultsFiles: '**/Test*.xml'
-      condition: succeededOrFailed()
+      condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
   - job: Job3
     displayName: Test Ubuntu
@@ -62,18 +64,20 @@ stages:
       inputs:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
 
     - pwsh: . ./build.ps1 -Task Test
       displayName: Test Module
       env:
         PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
 
     - task: PublishTestResults@2
       displayName: 'Publish Test Results **/Test*.xml'
       inputs:
         testRunner: NUnit
         testResultsFiles: '**/Test*.xml'
-      condition: succeededOrFailed()
+      condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
   - job: Job4
     displayName: Test macOS
@@ -87,18 +91,20 @@ stages:
       inputs:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
 
     - pwsh: . ./build.ps1 -Task Test
       displayName: Test Module
       env:
         PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
 
     - task: PublishTestResults@2
       displayName: 'Publish Test Results **/Test*.xml'
       inputs:
         testRunner: NUnit
         testResultsFiles: '**/Test*.xml'
-      condition: succeededOrFailed()
+      condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
   - job: Job5
     displayName: Test Windows (PSv6)
@@ -109,12 +115,14 @@ stages:
     steps:
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
       inputs:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
 
     - pwsh: . ./build.ps1 -Task Test
       displayName: Test Module
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
       env:
         PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
 
@@ -123,7 +131,7 @@ stages:
       inputs:
         testRunner: NUnit
         testResultsFiles: '**/Test*.xml'
-      condition: succeededOrFailed()
+      condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
   - job: Job6
     displayName: Test Docker (pwsh-preview)
@@ -134,6 +142,7 @@ stages:
     steps:
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
       inputs:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
@@ -151,19 +160,23 @@ stages:
 
     - script: docker build . -t test -f Dockerfile
       displayName: Build container image
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
 
     - script: docker run --name test test
       displayName: Test Module in Container
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
 
     - script: docker cp test:/source/BuildOutput/TestResults.xml BuildOutput/TestResults.xml
       displayName: Copy container test results
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
 
     - script: docker container prune -f
       displayName: Clean up container
+      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
 
     - task: PublishTestResults@2
       displayName: 'Publish Test Results **/Test*.xml'
-      condition: succeededOrFailed()
+      condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
       inputs:
         testRunner: NUnit
         testResultsFiles: '**/Test*.xml'
@@ -225,14 +238,14 @@ stages:
         addToPath: true
         versionSpec: '2.x'
 
-    - script: pip install --upgrade pip
-      displayName: Upgrade pip
+    #- script: pip install --upgrade pip
+    #  displayName: Upgrade pip
 
     - script: |
         pip install --user mkdocs
         pip install --user mkdocs-material
         pip install --user mkdocs-minify-plugin
-      displayName: Install Requirements
+      displayName: Install Pip Requirements
 
     - script: |
         git config --local user.name "Azure Pipelines"
@@ -244,6 +257,9 @@ stages:
       displayName: Configure Git
 
     - powershell: . ./build.ps1 -Task MkDocs
-      displayName: Deploy Docs to GitHub Pages
+      displayName: Build Docs
       env:
         GitHubPAT: $(GitHub.PAT)
+
+    - script: mkdocs gh-deploy --message "[skip ci] Deploying MkDocs update to ${{ parameters.GitUrl }}" --verbose --force --ignore-version
+      displayName: Deploy Docs to GitHub Pages
