@@ -215,7 +215,7 @@ stages:
     displayName: Deploy Docs
     condition: and(succeeded(), ne('${{ parameters.MkDocs }}', ''), ne('${{ parameters.GitUrl }}', ''), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     pool:
-      name: Hosted VS2017
+      name: Hosted Ubuntu 1604
 
     steps:
     - checkout: self
@@ -233,18 +233,11 @@ stages:
         secureFile: deploy_key
       displayName: 'Download Deploy Key'
 
-
-    - powershell: |
-        choco install openssh -y
-        choco install git -y
-      displayName: Install Git & OpenSSH
-
-    - powershell: |
+    - script: |
         git config --local user.name "Azure Pipelines"
         git config --local user.email "azuredevops@microsoft.com"
-        New-Item ~/.ssh -ItemType Directory -Verbose
-        Move-Item -Path $env:DOWNLOADSECUREFILE_SECUREFILEPATH -Destination ~/.ssh -Verbose
-        Rename-Item ~/.ssh/deploy_key -NewName id_rsa -Verbose
+        mkdir ~/.ssh && mv $DOWNLOADSECUREFILE_SECUREFILEPATH ~/.ssh/id_rsa
+        chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
         git remote set-url origin ${{ parameters.GitUrl }}
       displayName: Configure Git
