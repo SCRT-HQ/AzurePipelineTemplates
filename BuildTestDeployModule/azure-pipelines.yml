@@ -192,14 +192,12 @@ stages:
     steps:
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
-      condition: startsWith(variables['Build.SourceVersionMessage'], '!deploy')
       inputs:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
 
-    - powershell: . ./build.ps1 -Task Deploy
+    - powershell: if ($env:BUILD_SOURCEVERSIONMESSAGE -match '^!deploy') {. ./build.ps1 -Task Deploy} else {Write-Host "Skipping deploy due to SourceVersionMessage not starting with '!deploy'..."; Write-Host "$env:BUILD_SOURCEVERSIONMESSAGE"}
       displayName: Deploy to PowerShell Gallery
-      condition: startsWith(variables['Build.SourceVersionMessage'], '!deploy')
       env:
         PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
         GitHubPAT: $(GitHub.PAT)
