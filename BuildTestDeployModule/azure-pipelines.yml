@@ -196,7 +196,7 @@ stages:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
 
-    - powershell: if ($env:BUILD_SOURCEVERSIONMESSAGE -match '^!deploy') {. ./build.ps1 -Task Deploy} else {Write-Host "Skipping deploy due to SourceVersionMessage not starting with '!deploy'..."; Write-Host "$env:BUILD_SOURCEVERSIONMESSAGE"}
+    - powershell: if ($env:BUILD_SOURCEVERSIONMESSAGE -match '^!deploy') {. ./build.ps1 -Task Deploy} else {Write-Host "Skipping deploy due to SourceVersionMessage not starting with '!deploy'..."; Get-ChildItem Env:\ | Where-Object {$_.Name -match 'Build'}} | Format-Table Name,Value -AutoSize
       displayName: Deploy to PowerShell Gallery
       env:
         PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
