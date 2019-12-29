@@ -198,7 +198,7 @@ stages:
 
     - powershell: |
         if ($null -eq $env:BUILD_SOURCEVERSIONMESSAGE) {$env:BUILD_SOURCEVERSIONMESSAGE = ((git log -1).Split("`n") | Select-Object -Skip 5 | % {$_ -replace '^\s{4}'}) -join "`n"}
-        if ($env:BUILD_SOURCEVERSIONMESSAGE -match '^!deploy') {. ./build.ps1 -Task Deploy} else {Write-Host "Skipping deploy due to SourceVersionMessage not starting with '!deploy'..."; Get-ChildItem Env:\ | Where-Object {$_.Name -match 'Build'} | Format-Table Name,Value -AutoSize}
+        if ($env:BUILD_SOURCEVERSIONMESSAGE -match '^!deploy') {. ./build.ps1 -Task Deploy} else {Write-Host "Skipping deploy due to SourceVersionMessage not starting with '!deploy'..."; Get-ChildItem Env:\ | Where-Object {$_.Name -match 'Build'} | Format-Table Name,Value -AutoSize; "Source Version Message"; $env:BUILD_SOURCEVERSIONMESSAGE}
       displayName: Deploy to PowerShell Gallery
       env:
         PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
