@@ -185,7 +185,7 @@ stages:
   jobs:
   - job: Job7
     displayName: Deploy Module
-    condition: and(succeeded(), in(variables['Build.Reason'], 'Manual', 'IndividualCI', 'BatchedCI'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     pool:
       name: Hosted VS2017
 
