@@ -4,11 +4,11 @@ parameters:
 
 stages:
 - stage: Build
-  displayName: Compile Module
+  displayName: Build Module
   dependsOn: []
   jobs:
   - job: Job1
-    displayName: Compile Module
+    displayName: Build Module
     pool:
       name: Hosted VS2017
 
@@ -17,10 +17,10 @@ stages:
       submodules: recursive
 
     - powershell: . ./build.ps1
-      displayName: Compile Module
+      displayName: Build Module
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: Compiled Module'
+      displayName: 'Publish Artifact: Built Module'
       inputs:
         PathtoPublish: BuildOutput
         ArtifactName: BuildOutput
@@ -243,7 +243,7 @@ stages:
         TwitterConsumerSecret: $(Twitter.ConsumerSecret)
 
 - stage: Docs
-  displayName: Build/Push Docs
+  displayName: Build/Deploy Docs
   dependsOn:
     - Build
     - Test_Windows_PSv5
@@ -253,7 +253,7 @@ stages:
     - Test_Windows_PSv6
   jobs:
   - job: Job8
-    displayName: Build/Push Docs
+    displayName: Build/Deploy Docs
     condition: and(succeeded(), ne('${{ parameters.MkDocs }}', ''), ne('${{ parameters.GitUrl }}', ''), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     pool:
       name: Hosted Ubuntu 1604
