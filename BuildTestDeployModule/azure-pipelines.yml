@@ -23,11 +23,12 @@ stages:
         PathtoPublish: BuildOutput
         ArtifactName: BuildOutput
 
-- stage: Test
+- stage: Test Windows (PSv5)
   jobs:
   - job: Job2
     displayName: Test Windows (PSv5)
-    condition: succeeded()
+    condition: succeeded('Build')
+    dependsOn: []
     pool:
       name: Hosted VS2017
 
@@ -52,9 +53,12 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
+- stage: Test Ubuntu
+  jobs:
   - job: Job3
     displayName: Test Ubuntu
-    condition: succeeded()
+    condition: succeeded('Build')
+    dependsOn: []
     pool:
       name: Hosted Ubuntu 1604
 
@@ -79,9 +83,12 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
+- stage: Test macOS
+  jobs:
   - job: Job4
     displayName: Test macOS
-    condition: succeeded()
+    condition: succeeded('Build')
+    dependsOn: []
     pool:
       name: Hosted macOS
 
@@ -106,9 +113,12 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
+- stage: Test Windows (PSv6)
+  jobs:
   - job: Job5
     displayName: Test Windows (PSv6)
-    condition: succeeded()
+    condition: succeeded('Build')
+    dependsOn: []
     pool:
       name: Hosted VS2017
 
@@ -133,9 +143,12 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
+- stage: Test Docker (pwsh-preview)
+  jobs:
   - job: Job6
     displayName: Test Docker (pwsh-preview)
-    condition: succeeded()
+    condition: succeeded('Build')
+    dependsOn: []
     pool:
       name: Hosted Ubuntu 1604
 
