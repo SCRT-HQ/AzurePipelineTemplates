@@ -4,6 +4,8 @@ parameters:
 
 stages:
 - stage: Build
+  displayName: Compile Module
+  dependsOn: []
   jobs:
   - job: Job1
     displayName: Compile Module
@@ -23,7 +25,10 @@ stages:
         PathtoPublish: BuildOutput
         ArtifactName: BuildOutput
 
-- stage: Test
+- stage: Test_Windows_PSv5
+  displayName: Test Windows (PSv5)
+  dependsOn:
+    - Build
   jobs:
   - job: Job2
     displayName: Test Windows (PSv5)
@@ -52,6 +57,11 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
+- stage: Test_Ubuntu
+  displayName: Test Ubuntu
+  dependsOn:
+    - Build
+  jobs:
   - job: Job3
     displayName: Test Ubuntu
     condition: succeeded()
@@ -79,6 +89,11 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
+- stage: Test_macOS
+  displayName: Test macOS
+  dependsOn:
+    - Build
+  jobs:
   - job: Job4
     displayName: Test macOS
     condition: succeeded()
@@ -106,6 +121,11 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
+- stage: Test_Windows_PSv6
+  displayName: Test Windows (PSv6)
+  dependsOn:
+    - Build
+  jobs:
   - job: Job5
     displayName: Test Windows (PSv6)
     condition: succeeded()
@@ -133,6 +153,11 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
+- stage: Test_Docker
+  displayName: Test Docker (pwsh-preview)
+  dependsOn:
+    - Build
+  jobs:
   - job: Job6
     displayName: Test Docker (pwsh-preview)
     condition: succeeded()
@@ -182,6 +207,14 @@ stages:
         testResultsFiles: '**/Test*.xml'
 
 - stage: Deploy
+  displayName: Deploy Module
+  dependsOn:
+    - Build
+    - Test_Windows_PSv5
+    - Test_Ubuntu
+    - Test_macOS
+    - Test_Docker
+    - Test_Windows_PSv6
   jobs:
   - job: Job7
     displayName: Deploy Module
@@ -210,6 +243,14 @@ stages:
         TwitterConsumerSecret: $(Twitter.ConsumerSecret)
 
 - stage: Docs
+  displayName: Generate Documentation
+  dependsOn:
+    - Build
+    - Test_Windows_PSv5
+    - Test_Ubuntu
+    - Test_macOS
+    - Test_Docker
+    - Test_Windows_PSv6
   jobs:
   - job: Job8
     displayName: Deploy Docs
