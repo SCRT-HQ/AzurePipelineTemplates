@@ -58,7 +58,7 @@ stages:
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
 - stage: Test_Ubuntu
-  displayName: Test Ubuntu
+  displayName: Test Ubuntu (latest)
   dependsOn:
     - Build
   jobs:
@@ -90,7 +90,7 @@ stages:
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
 - stage: Test_macOS
-  displayName: Test macOS
+  displayName: Test macOS (latest)
   dependsOn:
     - Build
   jobs:
@@ -154,12 +154,12 @@ stages:
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
 - stage: Test_Docker
-  displayName: Test Docker (pwsh-preview)
+  displayName: Test Docker (preview)
   dependsOn:
     - Build
   jobs:
   - job: Job6
-    displayName: Test Docker (pwsh-preview)
+    displayName: Test Docker (preview)
     condition: succeeded()
     pool:
       name: Hosted Ubuntu 1604
@@ -243,7 +243,7 @@ stages:
         TwitterConsumerSecret: $(Twitter.ConsumerSecret)
 
 - stage: Docs
-  displayName: Generate Documentation
+  displayName: Generate Docs
   dependsOn:
     - Build
     - Test_Windows_PSv5
