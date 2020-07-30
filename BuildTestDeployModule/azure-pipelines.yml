@@ -159,6 +159,7 @@ stages:
   displayName: Test Docker (preview)
   dependsOn:
     - Build
+  condition: eq(variables['Build.SourceBranchName'], 'somethingnonexistent')
   jobs:
   - job: Job6
     displayName: Test Docker (preview)
