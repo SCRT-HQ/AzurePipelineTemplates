@@ -155,60 +155,60 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
-- stage: Test_Docker
-  displayName: Test Docker (preview)
-  dependsOn:
-    - Build
-  condition: eq(variables['Build.SourceBranchName'], 'somethingnonexistent')
-  jobs:
-  - job: Job6
-    displayName: Test Docker (preview)
-    condition: succeeded()
-    pool:
-      name: Hosted Ubuntu 1604
-
-    steps:
-    - task: DownloadBuildArtifacts@0
-      displayName: 'Download Build Artifacts'
-      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
-      inputs:
-        artifactName: BuildOutput
-        downloadPath: '$(Build.SourcesDirectory)'
-
-    - pwsh: |
-        if (-not (Test-Path Dockerfile)) {
-            Write-Host "Pulling Dockerfile from template repo"
-            Invoke-RestMethod 'https://raw.githubusercontent.com/SCRT-HQ/AzurePipelineTemplates/master/BuildTestDeployModule/Dockerfile' | Set-Content Dockerfile -Force
-        }
-        else {
-            Write-Host "Dockerfile already exists in current repo! Contents:`n"
-            Get-Content Dockerfile
-        }
-      displayName: Create Dockerfile
-
-    - script: docker build . -t test -f Dockerfile
-      displayName: Build container image
-      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
-
-    - script: docker run --name test test
-      displayName: Test Module in Container
-      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
-
-    - script: docker cp test:/source/BuildOutput/TestResults.xml BuildOutput/TestResults.xml
-      displayName: Copy container test results
-      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
-
-    - script: docker container prune -f
-      displayName: Clean up container
-      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
-
-    - task: PublishTestResults@2
-      displayName: 'Publish Test Results **/Test*.xml'
-      condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
-      inputs:
-        testRunner: NUnit
-        testResultsFiles: '**/Test*.xml'
-
+#- stage: Test_Docker
+#  displayName: Test Docker (preview)
+#  dependsOn:
+#    - Build
+#  condition: eq(variables['Build.SourceBranchName'], 'somethingnonexistent')
+#  jobs:
+#  - job: Job6
+#    displayName: Test Docker (preview)
+#    condition: succeeded()
+#    pool:
+#      name: Hosted Ubuntu 1604
+#
+#    steps:
+#    - task: DownloadBuildArtifacts@0
+#      displayName: 'Download Build Artifacts'
+#      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
+#      inputs:
+#        artifactName: BuildOutput
+#        downloadPath: '$(Build.SourcesDirectory)'
+#
+#    - pwsh: |
+#        if (-not (Test-Path Dockerfile)) {
+#            Write-Host "Pulling Dockerfile from template repo"
+#            Invoke-RestMethod 'https://raw.githubusercontent.com/SCRT-HQ/AzurePipelineTemplates/master/BuildTestDeployModule/Dockerfile' | Set-Content Dockerfile -Force
+#        }
+#        else {
+#            Write-Host "Dockerfile already exists in current repo! Contents:`n"
+#            Get-Content Dockerfile
+#        }
+#      displayName: Create Dockerfile
+#
+#    - script: docker build . -t test -f Dockerfile
+#      displayName: Build container image
+#      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
+#
+#    - script: docker run --name test test
+#      displayName: Test Module in Container
+#      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
+#
+#    - script: docker cp test:/source/BuildOutput/TestResults.xml BuildOutput/TestResults.xml
+#      displayName: Copy container test results
+#      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
+#
+#    - script: docker container prune -f
+#      displayName: Clean up container
+#      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
+#
+#    - task: PublishTestResults@2
+#      displayName: 'Publish Test Results **/Test*.xml'
+#      condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
+#      inputs:
+#        testRunner: NUnit
+#        testResultsFiles: '**/Test*.xml'
+#
 - stage: Deploy
   displayName: Deploy Module
   dependsOn:
@@ -216,7 +216,7 @@ stages:
     - Test_Windows_PSv5
     - Test_Ubuntu
     - Test_macOS
-    - Test_Docker
+    #- Test_Docker
     - Test_Windows_PSv6
   jobs:
   - job: Job7
@@ -252,7 +252,7 @@ stages:
     - Test_Windows_PSv5
     - Test_Ubuntu
     - Test_macOS
-    - Test_Docker
+    #- Test_Docker
     - Test_Windows_PSv6
   jobs:
   - job: Job8
