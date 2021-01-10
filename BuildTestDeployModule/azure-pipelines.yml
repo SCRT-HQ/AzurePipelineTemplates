@@ -221,7 +221,7 @@ stages:
   jobs:
   - job: Job7
     displayName: Deploy Module
-    condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'),or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
+    condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'),or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/beta'), eq(variables['Build.SourceBranch'], 'refs/heads/alpha'), eq(variables['Build.SourceBranch'], 'refs/heads/rc')))
     pool:
       name: Hosted VS2017
 
@@ -257,7 +257,7 @@ stages:
   jobs:
   - job: Job8
     displayName: Build/Deploy Docs
-    condition: and(succeeded(), ne('${{ parameters.MkDocs }}', ''), ne('${{ parameters.GitUrl }}', ''), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
+    condition: and(succeeded(), ne('${{ parameters.MkDocs }}', ''), ne('${{ parameters.GitUrl }}', ''), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/beta'), eq(variables['Build.SourceBranch'], 'refs/heads/alpha'), eq(variables['Build.SourceBranch'], 'refs/heads/rc')))
     pool:
       name: Hosted Ubuntu 1604
 
