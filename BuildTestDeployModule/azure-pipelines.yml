@@ -20,7 +20,7 @@ stages:
     - checkout: self
       submodules: recursive
 
-    - powershell: . ./build.ps1
+    - pwsh: . ./build.ps1
       displayName: Build Module
 
     - task: PublishBuildArtifacts@1
@@ -238,7 +238,7 @@ stages:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
 
-    - powershell: |
+    - pwsh: |
         if ($null -eq $env:BUILD_SOURCEVERSIONMESSAGE) {$env:BUILD_SOURCEVERSIONMESSAGE = (git log -1 --format=%B) -join "`n"}
         if ($env:BUILD_SOURCEVERSIONMESSAGE -match '^!deploy') {. ./build.ps1 -Task Deploy} else {Write-Host "Skipping deploy due to SourceVersionMessage not starting with '!deploy'..."; Get-ChildItem Env:\ | Where-Object {$_.Name -match 'Build'} | Format-Table Name,Value -AutoSize; "Source Version Message"; $env:BUILD_SOURCEVERSIONMESSAGE}
       displayName: Deploy to PowerShell Gallery
@@ -270,7 +270,7 @@ stages:
         artifactName: BuildOutput
         downloadPath: '$(Build.SourcesDirectory)'
 
-    - powershell: |
+    - pwsh: |
         . ./build.ps1 -Task Deploy
       displayName: Deploy Prerelease to PowerShell Gallery
       env:
