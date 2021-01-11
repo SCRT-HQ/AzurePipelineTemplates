@@ -225,7 +225,7 @@ stages:
   jobs:
   - job: Job7
     displayName: Deploy Module
-    condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/beta'), eq(variables['Build.SourceBranch'], 'refs/heads/alpha'), eq(variables['Build.SourceBranch'], 'refs/heads/rc')))
+    condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
     pool:
       name: Hosted VS2017
 
@@ -240,6 +240,37 @@ stages:
         if ($null -eq $env:BUILD_SOURCEVERSIONMESSAGE) {$env:BUILD_SOURCEVERSIONMESSAGE = (git log -1 --format=%B) -join "`n"}
         if ($env:BUILD_SOURCEVERSIONMESSAGE -match '^!deploy') {. ./build.ps1 -Task Deploy} else {Write-Host "Skipping deploy due to SourceVersionMessage not starting with '!deploy'..."; Get-ChildItem Env:\ | Where-Object {$_.Name -match 'Build'} | Format-Table Name,Value -AutoSize; "Source Version Message"; $env:BUILD_SOURCEVERSIONMESSAGE}
       displayName: Deploy to PowerShell Gallery
+      env:
+        PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
+        GitHubPAT: $(GitHub.PAT)
+        NuGetApiKey: $(NuGetApiKey)
+        TwitterAccessSecret: $(Twitter.AccessSecret)
+        TwitterAccessToken: $(Twitter.AccessToken)
+        TwitterConsumerKey: $(Twitter.ConsumerKey)
+        TwitterConsumerSecret: $(Twitter.ConsumerSecret)
+
+
+- stage: DeployPrerelease
+  displayName: Deploy Prerelease Module
+  dependsOn:
+    - Build
+  jobs:
+  - job: Job8
+    displayName: Deploy Prerelease Module
+    condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), or(eq(variables['Build.SourceBranch'], 'refs/heads/beta'), eq(variables['Build.SourceBranch'], 'refs/heads/alpha'), eq(variables['Build.SourceBranch'], 'refs/heads/rc')))
+    pool:
+      name: Hosted VS2017
+
+    steps:
+    - task: DownloadBuildArtifacts@0
+      displayName: 'Download Build Artifacts'
+      inputs:
+        artifactName: BuildOutput
+        downloadPath: '$(Build.SourcesDirectory)'
+
+    - powershell: |
+        . ./build.ps1 -Task Deploy
+      displayName: Deploy Prerelease to PowerShell Gallery
       env:
         PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
         GitHubPAT: $(GitHub.PAT)
