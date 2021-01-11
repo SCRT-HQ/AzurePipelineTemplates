@@ -229,7 +229,7 @@ stages:
     displayName: Deploy Module
     condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
     pool:
-      name: Hosted VS2017
+      name: '${{ parameters.BuildReleasePoolName }}'
 
     steps:
     - task: DownloadBuildArtifacts@0
