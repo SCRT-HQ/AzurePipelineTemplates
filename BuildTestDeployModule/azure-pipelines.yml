@@ -29,6 +29,7 @@ stages:
 
 - stage: Test_Windows_PSv5
   displayName: Test Windows (PSv5)
+  condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/beta'), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
   dependsOn:
     - Build
   jobs:
@@ -61,6 +62,7 @@ stages:
 
 - stage: Test_Ubuntu
   displayName: Test Ubuntu (latest)
+  condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/beta'), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
   dependsOn:
     - Build
   jobs:
@@ -93,6 +95,7 @@ stages:
 
 - stage: Test_macOS
   displayName: Test macOS (latest)
+  condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/beta'), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
   dependsOn:
     - Build
   jobs:
@@ -125,6 +128,7 @@ stages:
 
 - stage: Test_Windows_PSv6
   displayName: Test Windows (PSv6)
+  condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/beta'), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
   dependsOn:
     - Build
   jobs:
@@ -221,7 +225,7 @@ stages:
   jobs:
   - job: Job7
     displayName: Deploy Module
-    condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'),or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/beta'), eq(variables['Build.SourceBranch'], 'refs/heads/alpha'), eq(variables['Build.SourceBranch'], 'refs/heads/rc')))
+    condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/beta'), eq(variables['Build.SourceBranch'], 'refs/heads/alpha'), eq(variables['Build.SourceBranch'], 'refs/heads/rc')))
     pool:
       name: Hosted VS2017
 
