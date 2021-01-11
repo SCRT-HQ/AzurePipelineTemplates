@@ -3,6 +3,8 @@ parameters:
     default: ''
   - name: GitUrl
     default: ''
+  - name: BuildReleasePoolName
+    default: 'Hosted VS2017'
 
 stages:
 - stage: Build
@@ -12,7 +14,7 @@ stages:
   - job: Job1
     displayName: Build Module
     pool:
-      name: Hosted VS2017
+      name: '${{ parameters.BuildReleasePoolName }}'
 
     steps:
     - checkout: self
@@ -259,7 +261,7 @@ stages:
     displayName: Deploy Prerelease Module
     condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), or(eq(variables['Build.SourceBranch'], 'refs/heads/beta'), eq(variables['Build.SourceBranch'], 'refs/heads/alpha'), eq(variables['Build.SourceBranch'], 'refs/heads/rc')))
     pool:
-      name: Hosted VS2017
+      name: '${{ parameters.BuildReleasePoolName }}'
 
     steps:
     - task: DownloadBuildArtifacts@0
