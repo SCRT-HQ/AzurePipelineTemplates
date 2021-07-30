@@ -30,10 +30,11 @@ stages:
       inputs:
         PathtoPublish: BuildOutput
         ArtifactName: BuildOutput
+      condition: succeededOrFailed()
 
 - stage: Test_Windows_PSv5
   displayName: Test Windows (PSv5)
-  condition: and(or(ne('${{ parameters.TestBeta }}', 'No'), ne(variables['Build.SourceBranch'], 'refs/heads/beta')), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
+  condition: and(succeeded(), or(ne('${{ parameters.TestBeta }}', 'No'), ne(variables['Build.SourceBranch'], 'refs/heads/beta')), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
   dependsOn:
     - Build
   jobs:
@@ -66,7 +67,7 @@ stages:
 
 - stage: Test_Ubuntu
   displayName: Test Ubuntu (latest)
-  condition: and(or(ne('${{ parameters.TestBeta }}', 'No'), ne(variables['Build.SourceBranch'], 'refs/heads/beta')), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
+  condition: and(succeeded(), or(ne('${{ parameters.TestBeta }}', 'No'), ne(variables['Build.SourceBranch'], 'refs/heads/beta')), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
   dependsOn:
     - Build
   jobs:
@@ -99,7 +100,7 @@ stages:
 
 - stage: Test_macOS
   displayName: Test macOS (latest)
-  condition: and(or(ne('${{ parameters.TestBeta }}', 'No'), ne(variables['Build.SourceBranch'], 'refs/heads/beta')), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
+  condition: and(succeeded(), or(ne('${{ parameters.TestBeta }}', 'No'), ne(variables['Build.SourceBranch'], 'refs/heads/beta')), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
   dependsOn:
     - Build
   jobs:
@@ -132,7 +133,7 @@ stages:
 
 - stage: Test_Windows_PSv6
   displayName: Test Windows (PSv6)
-  condition: and(or(ne('${{ parameters.TestBeta }}', 'No'), ne(variables['Build.SourceBranch'], 'refs/heads/beta')), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
+  condition: and(succeeded(), or(ne('${{ parameters.TestBeta }}', 'No'), ne(variables['Build.SourceBranch'], 'refs/heads/beta')), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
   dependsOn:
     - Build
   jobs:
