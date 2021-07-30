@@ -223,7 +223,7 @@ stages:
     displayName: Deploy Module
     condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
     pool:
-      name: '${{ parameters.BuildReleasePoolName }}'
+      vmImage: '${{ parameters.BuildReleasePoolName }}'
     timeoutInMinutes: 120
     steps:
     - task: DownloadBuildArtifacts@0
@@ -255,7 +255,7 @@ stages:
     displayName: Deploy Prerelease Module
     condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), or(eq(variables['Build.SourceBranch'], 'refs/heads/beta'), eq(variables['Build.SourceBranch'], 'refs/heads/alpha'), eq(variables['Build.SourceBranch'], 'refs/heads/rc')))
     pool:
-      name: '${{ parameters.BuildReleasePoolName }}'
+      vmImage: '${{ parameters.BuildReleasePoolName }}'
     timeoutInMinutes: 120
     steps:
     - task: DownloadBuildArtifacts@0
