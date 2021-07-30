@@ -6,10 +6,6 @@ parameters:
   - name: BuildReleasePoolName
     default: 'windows-latest'
     type: string
-    values:
-      - windows-latest
-      - ubuntu-latest
-      - macOS-latest
   - name: TestBeta
     default: 'No'
   - name: IncludeDocker
