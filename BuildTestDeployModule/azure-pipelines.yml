@@ -4,9 +4,12 @@ parameters:
   - name: GitUrl
     default: ''
   - name: BuildReleasePoolName
-    default: 'Hosted VS2017'
+    default: 'windows-latest'
   - name: TestBeta
     default: 'No'
+  - name: IncludeDocker
+    type: boolean
+    default: false
 
 stages:
 - stage: Build
@@ -16,7 +19,7 @@ stages:
   - job: Job1
     displayName: Build Module
     pool:
-      name: '${{ parameters.BuildReleasePoolName }}'
+      vmImage: '${{ parameters.BuildReleasePoolName }}'
 
     steps:
     - checkout: self
@@ -42,7 +45,7 @@ stages:
     displayName: Test Windows (PSv5)
     condition: succeeded()
     pool:
-      name: Hosted VS2017
+      vmImage: 'windows-latest'
 
     steps:
     - task: DownloadBuildArtifacts@0
@@ -75,7 +78,7 @@ stages:
     displayName: Test Ubuntu
     condition: succeeded()
     pool:
-      name: Hosted Ubuntu 1604
+      vmImage: 'ubuntu-latest'
 
     steps:
     - task: DownloadBuildArtifacts@0
@@ -108,7 +111,7 @@ stages:
     displayName: Test macOS
     condition: succeeded()
     pool:
-      name: Hosted macOS
+      vmImage: 'macOS-latest'
 
     steps:
     - task: DownloadBuildArtifacts@0
@@ -141,7 +144,7 @@ stages:
     displayName: Test Windows (PSv6)
     condition: succeeded()
     pool:
-      name: Hosted VS2017
+      vmImage: 'windows-latest'
 
     steps:
     - task: DownloadBuildArtifacts@0
@@ -164,60 +167,40 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
-#- stage: Test_Docker
-#  displayName: Test Docker (preview)
-#  dependsOn:
-#    - Build
-#  condition: eq(variables['Build.SourceBranchName'], 'somethingnonexistent')
-#  jobs:
-#  - job: Job6
-#    displayName: Test Docker (preview)
-#    condition: succeeded()
-#    pool:
-#      name: Hosted Ubuntu 1604
-#
-#    steps:
-#    - task: DownloadBuildArtifacts@0
-#      displayName: 'Download Build Artifacts'
-#      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
-#      inputs:
-#        artifactName: BuildOutput
-#        downloadPath: '$(Build.SourcesDirectory)'
-#
-#    - pwsh: |
-#        if (-not (Test-Path Dockerfile)) {
-#            Write-Host "Pulling Dockerfile from template repo"
-#            Invoke-RestMethod 'https://raw.githubusercontent.com/SCRT-HQ/AzurePipelineTemplates/master/BuildTestDeployModule/Dockerfile' | Set-Content Dockerfile -Force
-#        }
-#        else {
-#            Write-Host "Dockerfile already exists in current repo! Contents:`n"
-#            Get-Content Dockerfile
-#        }
-#      displayName: Create Dockerfile
-#
-#    - script: docker build . -t test -f Dockerfile
-#      displayName: Build container image
-#      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
-#
-#    - script: docker run --name test test
-#      displayName: Test Module in Container
-#      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
-#
-#    - script: docker cp test:/source/BuildOutput/TestResults.xml BuildOutput/TestResults.xml
-#      displayName: Copy container test results
-#      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
-#
-#    - script: docker container prune -f
-#      displayName: Clean up container
-#      condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
-#
-#    - task: PublishTestResults@2
-#      displayName: 'Publish Test Results **/Test*.xml'
-#      condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
-#      inputs:
-#        testRunner: NUnit
-#        testResultsFiles: '**/Test*.xml'
-#
+- ${{ if parameters.IncludeDocker }}:
+  - stage: Test_Docker
+    displayName: Test Docker (preview)
+    dependsOn:
+      - Build
+    condition: eq(variables['Build.SourceBranchName'], 'somethingnonexistent')
+    jobs:
+    - job: Job6
+      displayName: Test Docker (preview)
+      condition: succeeded()
+      pool:
+        vmImage: 'ubuntu-latest'
+      container: scrthq/powershell:preview-buildtest-ubu-1804
+      steps:
+        - task: DownloadBuildArtifacts@0
+          displayName: 'Download Build Artifacts'
+          condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
+          inputs:
+            artifactName: BuildOutput
+            downloadPath: '$(Build.SourcesDirectory)'
+
+        - pwsh: . ./build.ps1 -Task Test
+          displayName: Test Module
+          condition: not(contains(variables['Build.SourceVersionMessage'], '!docs'))
+          env:
+            PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
+
+        - task: PublishTestResults@2
+          displayName: 'Publish Test Results **/Test*.xml'
+          inputs:
+            testRunner: NUnit
+            testResultsFiles: '**/Test*.xml'
+          condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
+
 - stage: Deploy
   displayName: Deploy Module
   dependsOn:
