@@ -238,6 +238,7 @@ stages:
           runOnce:
             deploy:
               steps:
+                - checkout: self
                 - task: DownloadBuildArtifacts@0
                   displayName: 'Download Build Artifacts'
                   inputs:
@@ -266,6 +267,7 @@ stages:
           runOnce:
             deploy:
               steps:
+                - checkout: self
                 - task: DownloadBuildArtifacts@0
                   displayName: 'Download Build Artifacts'
                   inputs:
