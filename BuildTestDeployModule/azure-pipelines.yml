@@ -206,7 +206,10 @@ stages:
               condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
   - stage: Deploy
-    displayName: Deploy Module
+    ${{ if in(variables['Build.SourceBranchName'],'beta','alpha','rc') }}:
+      displayName: Deploy Prerelease Module
+    ${{ if in(variables['Build.SourceBranchName'],'master','main') }}:
+      displayName: Deploy Module
     condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), in(variables['Build.SourceBranchName'],'master','main','beta','alpha','rc'))
     ${{ if in(variables['Build.SourceBranchName'],'beta','alpha','rc') }}:
       dependsOn:
@@ -286,7 +289,7 @@ stages:
         displayName: Build/Deploy Docs
         condition: and(succeeded(), ne('${{ parameters.MkDocs }}', ''), ne('${{ parameters.GitUrl }}', ''), in(variables['Build.SourceBranchName'],'master','main','beta','alpha','rc'))
         pool:
-          name: Hosted Ubuntu 1604
+          vmImage: 'ubuntu-latest'
 
         steps:
           - checkout: self
