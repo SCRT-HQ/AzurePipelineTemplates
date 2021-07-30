@@ -183,7 +183,7 @@ stages:
       pool:
         vmImage: 'ubuntu-latest'
       timeoutInMinutes: 120
-      container: scrthq/powershell:preview-buildtest-ubu-1804
+      container: scrthq/powershell:preview-noentrypoint-buildtest-ubu-2004
       steps:
         - task: DownloadBuildArtifacts@0
           displayName: 'Download Build Artifacts'
