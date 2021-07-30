@@ -20,7 +20,7 @@ stages:
     displayName: Build Module
     pool:
       vmImage: '${{ parameters.BuildReleasePoolName }}'
-
+    timeoutInMinutes: 120
     steps:
     - checkout: self
       submodules: recursive
@@ -46,7 +46,7 @@ stages:
     condition: succeeded()
     pool:
       vmImage: 'windows-latest'
-
+    timeoutInMinutes: 120
     steps:
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
@@ -79,7 +79,7 @@ stages:
     condition: succeeded()
     pool:
       vmImage: 'ubuntu-latest'
-
+    timeoutInMinutes: 120
     steps:
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
@@ -112,6 +112,7 @@ stages:
     condition: succeeded()
     pool:
       vmImage: 'macOS-latest'
+    timeoutInMinutes: 120
 
     steps:
     - task: DownloadBuildArtifacts@0
@@ -145,7 +146,7 @@ stages:
     condition: succeeded()
     pool:
       vmImage: 'windows-latest'
-
+    timeoutInMinutes: 120
     steps:
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
@@ -179,6 +180,7 @@ stages:
       condition: succeeded()
       pool:
         vmImage: 'ubuntu-latest'
+      timeoutInMinutes: 120
       container: scrthq/powershell:preview-buildtest-ubu-1804
       steps:
         - task: DownloadBuildArtifacts@0
@@ -208,7 +210,8 @@ stages:
     - Test_Windows_PSv5
     - Test_Ubuntu
     - Test_macOS
-    #- Test_Docker
+    - ${{ if parameters.IncludeDocker }}:
+      - Test_Docker
     - Test_Windows_PSv6
   jobs:
   - job: Job7
@@ -216,7 +219,7 @@ stages:
     condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/main')))
     pool:
       name: '${{ parameters.BuildReleasePoolName }}'
-
+    timeoutInMinutes: 120
     steps:
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
@@ -248,7 +251,7 @@ stages:
     condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), or(eq(variables['Build.SourceBranch'], 'refs/heads/beta'), eq(variables['Build.SourceBranch'], 'refs/heads/alpha'), eq(variables['Build.SourceBranch'], 'refs/heads/rc')))
     pool:
       name: '${{ parameters.BuildReleasePoolName }}'
-
+    timeoutInMinutes: 120
     steps:
     - task: DownloadBuildArtifacts@0
       displayName: 'Download Build Artifacts'
