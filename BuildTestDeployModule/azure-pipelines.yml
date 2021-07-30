@@ -137,14 +137,14 @@ stages:
         testResultsFiles: '**/Test*.xml'
       condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
 
-- stage: Test_Windows_PSv6
-  displayName: Test Windows (PSv6)
+- stage: Test_Windows_PSv7
+  displayName: Test Windows (PSv7)
   condition: and(succeeded(), or(ne('${{ parameters.TestBeta }}', 'No'), ne(variables['Build.SourceBranch'], 'refs/heads/beta')), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
   dependsOn:
     - Build
   jobs:
   - job: Job5
-    displayName: Test Windows (PSv6)
+    displayName: Test Windows (PSv7)
     condition: succeeded()
     pool:
       vmImage: 'windows-latest'
@@ -214,7 +214,7 @@ stages:
     - Test_macOS
     - ${{ if parameters.IncludeDocker }}:
       - Test_Docker
-    - Test_Windows_PSv6
+    - Test_Windows_PSv7
   jobs:
   - job: Job7
     displayName: Deploy Module
@@ -280,8 +280,9 @@ stages:
     - Test_Windows_PSv5
     - Test_Ubuntu
     - Test_macOS
-    #- Test_Docker
-    - Test_Windows_PSv6
+    - ${{ if parameters.IncludeDocker }}:
+      - Test_Docker
+    - Test_Windows_PSv7
   jobs:
   - job: Job9
     displayName: Build/Deploy Docs
