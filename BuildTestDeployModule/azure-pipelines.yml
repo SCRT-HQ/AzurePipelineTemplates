@@ -224,8 +224,6 @@ stages:
       - job: Job7
         displayName: Deploy Prerelease Module
         condition: in(variables['Build.SourceBranchName'],'beta','alpha','rc')
-        dependsOn:
-          - Build
         pool:
           vmImage: '${{ parameters.BuildReleasePoolName }}'
         timeoutInMinutes: 120
@@ -250,14 +248,6 @@ stages:
       - job: Job8
         displayName: Deploy Module
         condition: in(variables['Build.SourceBranchName'],'master','main')
-        dependsOn:
-          - Build
-          - Test_Windows_PSv5
-          - Test_Ubuntu
-          - Test_macOS
-          - ${{ if parameters.IncludeDocker }}:
-            - Test_Docker
-          - Test_Windows_Latest
         pool:
           vmImage: '${{ parameters.BuildReleasePoolName }}'
         timeoutInMinutes: 120
