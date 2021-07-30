@@ -208,10 +208,10 @@ stages:
   - stage: Deploy
     displayName: Deploy Module
     condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), in(variables['Build.SourceBranchName'],'master','main','beta','alpha','rc'))
-    ${{ if in(variables['Build.SourceBranchName'],'master','main') }}:
     ${{ if in(variables['Build.SourceBranchName'],'beta','alpha','rc') }}:
       dependsOn:
         - Build
+    ${{ if in(variables['Build.SourceBranchName'],'master','main') }}:
       dependsOn:
         - Build
         - Test_Windows_PSv5
