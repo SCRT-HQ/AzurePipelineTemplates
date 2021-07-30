@@ -8,6 +8,7 @@ parameters:
     type: string
   - name: TestBeta
     default: 'No'
+    type: string
   - name: IncludeDocker
     type: boolean
     default: false
@@ -174,7 +175,7 @@ stages:
     displayName: Test Docker (preview)
     dependsOn:
       - Build
-    condition: eq(variables['Build.SourceBranchName'], 'somethingnonexistent')
+    condition: and(succeeded(), or(ne('${{ parameters.TestBeta }}', 'No'), ne(variables['Build.SourceBranch'], 'refs/heads/beta')), ne(variables['Build.SourceBranch'], 'refs/heads/alpha'))
     jobs:
     - job: Job6
       displayName: Test Docker (preview)
