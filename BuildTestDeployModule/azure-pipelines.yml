@@ -1,6 +1,6 @@
 parameters:
   - name: ModuleName
-    default: $(ModuleName)
+    default: ${{ variables.ModuleName }}
     type: string
   - name: MkDocs
     default: ''
