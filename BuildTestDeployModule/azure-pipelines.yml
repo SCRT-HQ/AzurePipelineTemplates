@@ -207,90 +207,90 @@ stages:
                 testRunner: NUnit
                 testResultsFiles: '**/Test*.xml'
               condition: and(succeededOrFailed(), not(contains(variables['Build.SourceVersionMessage'], '!docs')))
+  - ${{ if in(variables['Build.SourceBranchName'],'beta','alpha','rc','master','main') }}:
+    - stage: Deploy
+      ${{ if in(variables['Build.SourceBranchName'],'beta','alpha','rc') }}:
+        displayName: Deploy Prerelease Module
+      ${{ if in(variables['Build.SourceBranchName'],'master','main') }}:
+        displayName: Deploy Module
+      condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), in(variables['Build.SourceBranchName'],'master','main','beta','alpha','rc'))
+      ${{ if in(variables['Build.SourceBranchName'],'beta','alpha','rc') }}:
+        dependsOn:
+          - Build
+      ${{ if in(variables['Build.SourceBranchName'],'master','main') }}:
+        dependsOn:
+          - Build
+          - Test_Windows_PSv5
+          - Test_Ubuntu
+          - Test_macOS
+          - ${{ if parameters.IncludeDocker }}:
+            - Test_Docker
+          - Test_Windows_Latest
+      jobs:
 
-  - stage: Deploy
-    ${{ if in(variables['Build.SourceBranchName'],'beta','alpha','rc') }}:
-      displayName: Deploy Prerelease Module
-    ${{ if in(variables['Build.SourceBranchName'],'master','main') }}:
-      displayName: Deploy Module
-    condition: and(succeeded(), in(variables['Build.Reason'], 'Schedule', 'Manual', 'IndividualCI', 'BatchedCI'), in(variables['Build.SourceBranchName'],'master','main','beta','alpha','rc'))
-    ${{ if in(variables['Build.SourceBranchName'],'beta','alpha','rc') }}:
-      dependsOn:
-        - Build
-    ${{ if in(variables['Build.SourceBranchName'],'master','main') }}:
-      dependsOn:
-        - Build
-        - Test_Windows_PSv5
-        - Test_Ubuntu
-        - Test_macOS
-        - ${{ if parameters.IncludeDocker }}:
-          - Test_Docker
-        - Test_Windows_Latest
-    jobs:
+        - ${{ if in(variables['Build.SourceBranchName'],'beta','alpha','rc') }}:
+          - deployment: Job7
+            displayName: Deploy Prerelease Module
+            condition: in(variables['Build.SourceBranchName'],'beta','alpha','rc')
+            pool:
+              vmImage: '${{ parameters.BuildReleasePoolName }}'
+            timeoutInMinutes: 120
+            environment: ${{ parameters.ModuleName }}-Prerelease
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - checkout: self
+                      submodules: recursive
+                    - task: DownloadBuildArtifacts@0
+                      displayName: 'Download Build Artifacts'
+                      inputs:
+                        artifactName: BuildOutput
+                        downloadPath: '$(Build.SourcesDirectory)'
 
-      - ${{ if in(variables['Build.SourceBranchName'],'beta','alpha','rc') }}:
-        - deployment: Job7
-          displayName: Deploy Prerelease Module
-          condition: in(variables['Build.SourceBranchName'],'beta','alpha','rc')
-          pool:
-            vmImage: '${{ parameters.BuildReleasePoolName }}'
-          timeoutInMinutes: 120
-          environment: ${{ parameters.ModuleName }}-Prerelease
-          strategy:
-            runOnce:
-              deploy:
-                steps:
-                  - checkout: self
-                    submodules: recursive
-                  - task: DownloadBuildArtifacts@0
-                    displayName: 'Download Build Artifacts'
-                    inputs:
-                      artifactName: BuildOutput
-                      downloadPath: '$(Build.SourcesDirectory)'
+                    - pwsh: |
+                        . ./build.ps1 -Task Deploy
+                      displayName: Deploy Prerelease to PowerShell Gallery
+                      env:
+                        PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
+                        GitHubPAT: $(GitHub.PAT)
+                        NuGetApiKey: $(NuGetApiKey)
+                        TwitterAccessSecret: $(Twitter.AccessSecret)
+                        TwitterAccessToken: $(Twitter.AccessToken)
+                        TwitterConsumerKey: $(Twitter.ConsumerKey)
+                        TwitterConsumerSecret: $(Twitter.ConsumerSecret)
+        - ${{ if in(variables['Build.SourceBranchName'],'master','main') }}:
+          - deployment: Job8
+            displayName: Deploy Module
+            condition: in(variables['Build.SourceBranchName'],'master','main')
+            pool:
+              vmImage: '${{ parameters.BuildReleasePoolName }}'
+            timeoutInMinutes: 120
+            environment: ${{ parameters.ModuleName }}
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                    - checkout: self
+                      submodules: recursive
+                    - task: DownloadBuildArtifacts@0
+                      displayName: 'Download Build Artifacts'
+                      inputs:
+                        artifactName: BuildOutput
+                        downloadPath: '$(Build.SourcesDirectory)'
 
-                  - pwsh: |
-                      . ./build.ps1 -Task Deploy
-                    displayName: Deploy Prerelease to PowerShell Gallery
-                    env:
-                      PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
-                      GitHubPAT: $(GitHub.PAT)
-                      NuGetApiKey: $(NuGetApiKey)
-                      TwitterAccessSecret: $(Twitter.AccessSecret)
-                      TwitterAccessToken: $(Twitter.AccessToken)
-                      TwitterConsumerKey: $(Twitter.ConsumerKey)
-                      TwitterConsumerSecret: $(Twitter.ConsumerSecret)
-      - ${{ if in(variables['Build.SourceBranchName'],'master','main') }}:
-        - deployment: Job8
-          displayName: Deploy Module
-          condition: in(variables['Build.SourceBranchName'],'master','main')
-          pool:
-            vmImage: '${{ parameters.BuildReleasePoolName }}'
-          timeoutInMinutes: 120
-          environment: ${{ parameters.ModuleName }}
-          strategy:
-            runOnce:
-              deploy:
-                steps:
-                  - checkout: self
-                    submodules: recursive
-                  - task: DownloadBuildArtifacts@0
-                    displayName: 'Download Build Artifacts'
-                    inputs:
-                      artifactName: BuildOutput
-                      downloadPath: '$(Build.SourcesDirectory)'
-
-                  - pwsh: |
-                      if ($null -eq $env:BUILD_SOURCEVERSIONMESSAGE) {$env:BUILD_SOURCEVERSIONMESSAGE = (git log -1 --format=%B) -join "`n"}
-                      if ($env:BUILD_SOURCEVERSIONMESSAGE -match '^!deploy') {. ./build.ps1 -Task Deploy} else {Write-Host "Skipping deploy due to SourceVersionMessage not starting with '!deploy'..."; Get-ChildItem Env:\ | Where-Object {$_.Name -match 'Build'} | Format-Table Name,Value -AutoSize; "Source Version Message"; $env:BUILD_SOURCEVERSIONMESSAGE}
-                    displayName: Deploy to PowerShell Gallery
-                    env:
-                      PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
-                      GitHubPAT: $(GitHub.PAT)
-                      NuGetApiKey: $(NuGetApiKey)
-                      TwitterAccessSecret: $(Twitter.AccessSecret)
-                      TwitterAccessToken: $(Twitter.AccessToken)
-                      TwitterConsumerKey: $(Twitter.ConsumerKey)
-                      TwitterConsumerSecret: $(Twitter.ConsumerSecret)
+                    - pwsh: |
+                        if ($null -eq $env:BUILD_SOURCEVERSIONMESSAGE) {$env:BUILD_SOURCEVERSIONMESSAGE = (git log -1 --format=%B) -join "`n"}
+                        if ($env:BUILD_SOURCEVERSIONMESSAGE -match '^!deploy') {. ./build.ps1 -Task Deploy} else {Write-Host "Skipping deploy due to SourceVersionMessage not starting with '!deploy'..."; Get-ChildItem Env:\ | Where-Object {$_.Name -match 'Build'} | Format-Table Name,Value -AutoSize; "Source Version Message"; $env:BUILD_SOURCEVERSIONMESSAGE}
+                      displayName: Deploy to PowerShell Gallery
+                      env:
+                        PSGSuiteConfigJson: '$(PSGSuiteConfigJson)'
+                        GitHubPAT: $(GitHub.PAT)
+                        NuGetApiKey: $(NuGetApiKey)
+                        TwitterAccessSecret: $(Twitter.AccessSecret)
+                        TwitterAccessToken: $(Twitter.AccessToken)
+                        TwitterConsumerKey: $(Twitter.ConsumerKey)
+                        TwitterConsumerSecret: $(Twitter.ConsumerSecret)
 
   - stage: Docs
     displayName: Build/Deploy Docs
